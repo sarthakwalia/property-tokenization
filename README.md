@@ -24,7 +24,7 @@ This project implements an ERC721-based Real Estate Tokenization flow using the 
     - TokenizationManager.ts
 5. assets/ - Contains architecture and Flow charts.
 
-### Overall Architecture of Smart Contract 
+### Overall Architecture 
 ##### Overall Smart Contract Flow : 
 ![Overall Smart Contract Flow](/assets/OverallSmartContractFlow.png)
 ##### Property Tokenisation Flow : 
