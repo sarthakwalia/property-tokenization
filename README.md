@@ -59,16 +59,16 @@ To compile all the contracts, run in terminal: -
 
 ### Deploy contracts on Base
 To deploy the separate contracts, run in terminal: -
-> npx hardhat run deploy/<scriptPath> --network <network_name>
+> npx hardhat run deploy/filePath* --network <network_name>
 
 Ex: npx hardhat run deploy/0_proxyadmin_deploy.ts --network base-sepolia 
 
 ### Run Interaction Scripts Cases on Base
-> npx hardhat run scripts/<scriptPath> --network <network_name>
+> npx hardhat run scripts/filePath* --network <network_name>
 
-Ex: yarn hardhat run ./scripts/0_tokenization_setup.ts  --network <network_name> 
+Ex: yarn hardhat run ./scripts/0_tokenization_setup.ts  --network base-sepolia
 
 ### Run Test Cases
-> npx hardhat test --match-path ./test/<filePath>
+> npx hardhat test --match-path ./test/filePath*
 
 Ex: npx hardhat test ./test/TokenizationManager.ts
