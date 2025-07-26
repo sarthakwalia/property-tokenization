@@ -1,5 +1,5 @@
 # 🏡 Property Tokenization System
-This project implements an ERC721-based Real Estate Tokenization flow using the TokenizationManagerV1 smart contract. It allows users to:
+This project implements an ERC721-based Real Estate Tokenization flow using the Tokenization Manager smart contract. It allows users to:
 1. Mint a PropertyDeed NFT
 2. Fractionalize it into ERC20 tokens
 3. Start a public distribution sale
