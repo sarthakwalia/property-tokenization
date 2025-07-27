@@ -57,13 +57,13 @@ PROXY_ADMIN_WALLET_PK=
 To compile all the contracts, run in terminal: -
 > npx hardhat compile
 
-### Deploy contracts on Base
+### Deploy contracts on Base Sepolia testnet
 To deploy the separate contracts, run in terminal: -
 > npx hardhat run deploy/filePath* --network <network_name>
 
 Ex: npx hardhat run deploy/0_proxyadmin_deploy.ts --network base-sepolia 
 
-### Run Interaction Scripts Cases on Base
+### Run Interaction Scripts Cases on Base Sepolia testnet
 > npx hardhat run scripts/filePath* --network <network_name>
 
 Ex: npx hardhat run ./scripts/0_tokenization_setup.ts  --network base-sepolia
