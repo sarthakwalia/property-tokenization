@@ -63,7 +63,7 @@ To deploy the separate contracts, run in terminal: -
 
 Ex: npx hardhat run deploy/0_proxyadmin_deploy.ts --network base-sepolia 
 
-### Run Interaction Scripts Cases on Base Sepolia testnet
+### Run Interaction Scripts on Base Sepolia testnet
 > npx hardhat run scripts/filePath* --network <network_name>
 
 Ex: npx hardhat run ./scripts/0_tokenization_setup.ts  --network base-sepolia
