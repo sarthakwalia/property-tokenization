@@ -88,6 +88,7 @@ contract TokenizationManagerV1 is OwnableUpgradeable {
     /// @notice Allows users to buy fractional tokens of a tokenized property
     /// @param propertyId ID of the tokenized property
     /// @param numberOfFractions Number of fractions the buyer wants to purchase
+    // TODO: ADD a platform fees deduct logic 
     function buyFractions(uint256 propertyId, uint256 numberOfFractions) external payable {
         PropertyData storage data = properties[propertyId];
         require(data.isDistributionStarted, "Sale not started");

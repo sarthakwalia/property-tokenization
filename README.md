@@ -69,6 +69,6 @@ Ex: npx hardhat run deploy/0_proxyadmin_deploy.ts --network base-sepolia
 Ex: npx hardhat run ./scripts/0_tokenization_setup.ts  --network base-sepolia
 
 ### Run Test Cases
-> npx hardhat test --match-path ./test/filePath*
+> npx hardhat test ./test/filePath*
 
 Ex: npx hardhat test ./test/TokenizationManager.ts
