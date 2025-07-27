@@ -8,30 +8,46 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./PropertyDeed.sol";
 import "./PropertyFractions.sol";
 
-/// @title TokenizationManager - Orchestrates tokenization process 
-// Upgradeable
+/// @title TokenizationManagerV1 - Orchestrates tokenization of property NFTs into ERC20 fractional tokens
+/// @notice This upgradeable contract manages minting of PropertyDeed NFTs, creation of ERC20 fractions, and their sale/distribution
+/// @dev Must be initialized with the address of a deployed PropertyDeed contract
 contract TokenizationManagerV1 is OwnableUpgradeable {
+    
+    /// @dev Reference to the PropertyDeed (ERC721) contract
     PropertyDeed public propertyDeed;
+    
+    /// @dev Total supply of fractional tokens per property (with 18 decimals)
     uint256 public constant FRACTION_SUPPLY = 1_000_000 ether;
-
+    
+    /// @dev Stores information about each tokenized property
     struct PropertyData {
-        address fractionsContract;
-        address propertyCreator;
-        uint256 pricePerFraction;
-        bool isDistributionStarted;
+        address fractionsContract;  // ERC20 contract representing fractions
+        address propertyCreator;    // Creator/owner who initiated tokenization
+        uint256 pricePerFraction;   // Price per fraction in wei
+        bool isDistributionStarted; // Whether public sale has started
     }
 
+    /// @dev Mapping from propertyId to its tokenization data
     mapping(uint256 => PropertyData) public properties;
 
+    /// @notice Emitted when a property is tokenized into fractions
     event PropertyTokenized(uint256 indexed propertyId, address fractionsContract);
+
+    /// @notice Emitted when distribution starts for a property
     event DistributionStarted(uint256 indexed propertyId, uint256 pricePerFraction);
+
+    /// @notice Emitted when someone buys fractions of a property
     event FractionsPurchased(address indexed buyer, uint256 indexed propertyId, uint256 amount);
 
+    /// @notice Initializes the contract with the address of the PropertyDeed contract
+    /// @param _propertyDeed The address of the PropertyDeed NFT contract
     function initialize(address _propertyDeed) public initializer {
         __Ownable_init(msg.sender);
         propertyDeed = PropertyDeed(_propertyDeed);
     }
 
+    /// @notice Tokenizes a property by minting an NFT and deploying a new ERC20 fractions contract
+    /// @param tokenURI Metadata URI for the newly minted property NFT
     function tokenizeProperty(string memory tokenURI) external {
         uint256 propertyId = propertyDeed.mint(address(this), tokenURI);
 
@@ -53,6 +69,9 @@ contract TokenizationManagerV1 is OwnableUpgradeable {
         emit PropertyTokenized(propertyId, address(fractions));
     }
 
+    /// @notice Starts public sale/distribution of fractional tokens for a given property
+    /// @param propertyId ID of the tokenized property
+    /// @param pricePerFractionInWei Price of each fraction in wei
     function startDistribution(uint256 propertyId, uint256 pricePerFractionInWei) external {
         require(IERC721(address(propertyDeed)).ownerOf(propertyId) == address(this), "Deed not locked");
         PropertyData storage data = properties[propertyId];
@@ -66,6 +85,9 @@ contract TokenizationManagerV1 is OwnableUpgradeable {
         emit DistributionStarted(propertyId, pricePerFractionInWei);
     }
 
+    /// @notice Allows users to buy fractional tokens of a tokenized property
+    /// @param propertyId ID of the tokenized property
+    /// @param numberOfFractions Number of fractions the buyer wants to purchase
     function buyFractions(uint256 propertyId, uint256 numberOfFractions) external payable {
         PropertyData storage data = properties[propertyId];
         require(data.isDistributionStarted, "Sale not started");
