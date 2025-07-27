@@ -178,5 +178,62 @@ describe("TokenizationManager", function () {
       .to.emit(manager, "FractionsPurchased")
       .withArgs(await buyer.getAddress(), 1, numFractions);
   });
+
+  it("Should succeed buying fractions and transfer ETH to property creator", async function () {
+    // Tokenize a property
+    await manager.connect(owner).tokenizeProperty("uri://property1");
+  
+    // Get PropertyData
+    const data = await manager.properties(1);
+    const fractions = await ethers.getContractAt("PropertyFractions", data.fractionsContract);
+  
+    // Approve Property Token to manager
+    await fractions.connect(owner).approve(manager.target, TOTAL_SUPPLY);
+  
+    // Start distribution (price = 0.001 ETH per token)
+    const pricePerFraction = ethers.parseEther("0.001");
+    await manager.connect(owner).startDistribution(1, pricePerFraction);
+  
+    const numFractions = 10n;
+    const totalCost = pricePerFraction * numFractions;
+  
+    // Capture balances before
+    const buyerAddress = await buyer.getAddress();
+    const creatorAddress = await owner.getAddress();
+  
+    const buyerBalanceBefore = await ethers.provider.getBalance(buyerAddress);
+    const creatorBalanceBefore = await ethers.provider.getBalance(creatorAddress);
+  
+    // Buyer buys fractions
+    const tx = await manager.connect(buyer).buyFractions(1, numFractions, {
+      value: totalCost,
+    });
+    const receipt = await tx.wait();
+    const gasUsed = receipt.gasUsed * (tx.gasPrice ?? 0n);
+  
+    // Check buyer received the fractions
+    const buyerTokenBalance = await fractions.balanceOf(buyerAddress);
+    expect(buyerTokenBalance).to.equal(numFractions);
+  
+    // Check buyer ETH balance reduced appropriately
+    const buyerBalanceAfter = await ethers.provider.getBalance(buyerAddress);
+    expect(buyerBalanceAfter).to.be.closeTo(
+      buyerBalanceBefore - totalCost - gasUsed,
+      ethers.parseEther("0.001")
+    );
+  
+    // Check creator ETH balance increased by totalCost
+    const creatorBalanceAfter = await ethers.provider.getBalance(creatorAddress);
+    expect(creatorBalanceAfter).to.be.closeTo(
+      creatorBalanceBefore + totalCost,
+      ethers.parseEther("0.001")
+    );
+  
+    // Check event
+    await expect(tx)
+      .to.emit(manager, "FractionsPurchased")
+      .withArgs(buyerAddress, 1, numFractions);
+  });
+  
   
 });

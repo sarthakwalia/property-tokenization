@@ -77,12 +77,17 @@ contract TokenizationManagerV1 is OwnableUpgradeable {
         ERC20 fractions = ERC20(data.fractionsContract);
         require(fractions.balanceOf(data.propertyCreator) >= numberOfFractions, "Not enough fractions left");
 
+        // Transfer ETH directly to the property creator
+        (bool success, ) = payable(data.propertyCreator).call{value: totalCost}("");
+        require(success, "ETH transfer to property creator failed");
+
         // Transfer from property creator to buyer
         fractions.transferFrom(data.propertyCreator, msg.sender, numberOfFractions);
 
         // Refund excess
         if (msg.value > totalCost) {
-            payable(msg.sender).transfer(msg.value - totalCost);
+            (bool refundSuccess, ) = payable(msg.sender).call{value: msg.value - totalCost}("");
+            require(refundSuccess, "Refund failed");
         }
 
         emit FractionsPurchased(msg.sender, propertyId, numberOfFractions);
